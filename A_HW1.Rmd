@@ -412,14 +412,98 @@ legend("topright", legend = paste("theta =", theta), col = colors, lty = 1, cex 
    - This quadratic increase in variance relative to the mean explains the greater spread and variability we observe with larger $\theta$ values.
 
 
-### Ex 2.26
-Refer to Table 2.4 cross classifying happiness with family income.
+(Alessio)
+*Refer to Table 2.4 cross classifying happiness with family income. (a) Find and interpret the correlation using scores (i) (1, 2, 3) for each variable, (ii) (1, 2, 3) for family income and (1, 4, 5) for happiness.(b) Construct the joint distribution that has these marginal distributions and exhibits independence of X and Y .*
 
 **Solution**
+A. the corelation coefficient is given by $\rho=\frac{COV(X,Y)}{\sigma_X\sigma_Y}$ therefore we have to compute the mean, variance and covariance in oreder to have the desired corelations.
 
-Add comments to the solution.
+since we are talking about a joint distribution function, if we have S_x and S_y set of scores of each variable, the mean for each variable will be given by $\mu_x=\sum_{x\in S_x} x P(X=x_i)$ where $P(X=x)=\sum_{y\in S_y} P(X=x,Y=y)$ which we already have in the table under "total"
 
+the variance is similarly done: $\mu_x=\sum_{x\in S_x} (x-\mu_x)^2 P(X=x_i)$ once we have the means and the covariance is defined by $COV(X,Y)=\sum_{y\in S_y}\sum_{x\in S_x}(x-\mu_x)(y-mu_y)P(x,y)$
+from this we apply the first formula we stated at the beginning and get the corelation $\rho$.
 
+## controlla se devo usare mu o E
+```{r part_A echo=TRUE}
+library(knitr)
+l=c(0.080, 0.198, 0.079, 0.357,0.043, 0.254, 0.143, 0.440,0.017, 0.105, 0.081, 0.203, 0.140, 0.557, 0.303, 1.000)
+
+S_1<-c(1,2,3)
+S_2<-c(1,4,5)
+dim(l)<- c(4,4)
+rownames(l)<-c("Below average","Average","Above average", "Total")
+colnames(l)<-c("Not too happy", "Pretty happy","Very happy", "Total")
+
+kable(l, row.names=T)
+
+m<- c(0,0) #mean
+for(i in 1:length(S_1)){ 
+  m[1]<-m[1]+(S_1[i]*l[4,i])#x
+  m[2]<-m[2]+(S_1[i]*l[i,4])#y
+}
+m
+v<- c(0,0) #variance
+for(i in 1:length(S_1)){ 
+ v[1]<-(S_1[i]-m[1])^2*l[4,i]#x
+ v[2]<-(S_1[i]-m[2])^2*l[i,4]#y
+}
+v
+#covariance matrix
+covariance=0
+for(i in 1:length(S_1)){ 
+  for(j in 1:length(S_1)){ 
+    a<-(S_1[i]-m[1])*(S_1[j]-m[2])*l[j,i]
+    covariance<-covariance+(S_1[i]-m[1])*(S_1[j]-m[2])*l[j,i]
+    
+  }
+}
+covariance
+#corelation
+r<-covariance/(sqrt(v[1])*sqrt(v[2]))
+r
+
+#repeat with s_2 for the Y
+
+m<- c(0,0) #mean
+for(i in 1:length(S_1)){ 
+  m[1]<-m[1]+(S_1[i]*l[4,i])
+  m[2]<-m[2]+(S_2[i]*l[i,4])
+}
+m
+v<- c(0,0) #variance
+for(i in 1:length(S_1)){ 
+ v[1]<-(S_1[i]-m[1])^2*l[4,i]
+ v[2]<-(S_2[i]-m[2])^2*l[i,4]
+}
+v
+#covariance matrix
+covariance=0
+for(i in 1:length(S_1)){ 
+  for(j in 1:length(S_1)){ 
+    covariance<-covariance+(S_1[i]-m[1])*(S_2[j]-m[2])*l[j,i]
+  }
+}
+covariance
+#corelation
+r<-covariance/(sqrt(v[1])*sqrt(v[2]))
+r
+
+```
+B.  to exhibit indipendence the joint distribution must have $P(x,y)=P(x)P(y)$ therefore each $P(x,y)$ will be easely computed
+```{r part_B echo=TRUE}
+marginal_X<-c(0.357,0.440,0.203)
+marginal_Y<-c(0.140,0.557,0.303)
+
+indy_table<-matrix(0,length(marginal_X),length(marginal_Y))
+rownames(indy_table)<-c("Below average","Average","Above average")
+colnames(indy_table)<-c("Not too happy", "Pretty happy","Very happy")
+for(i in 1:length(marginal_X)){ 
+  for(j in 1:length(marginal_Y)){ 
+    indy_table[j,i]<-marginal_X[j]*marginal_Y[i]
+  }
+}
+indy_table
+```
 ### Ex 2.52
 (Devid)
 *The pdf $f$ of a $N(\mu, \sigma^2)$ distribution can be derived from the standard normal pdf $\phi$ shown in equation $(2.9)$. (a) Show that the normal cdf $F$ relates to the standard normal cdf $\Phi$ by $F(y) = \Phi[(y - \mu)/\sigma]$. (b) From (a), show that $f(y) = (1/\sigma)\phi[(y - \mu)/\sigma]$, and show this is equation $(2.8)$.*
@@ -639,31 +723,99 @@ plot(y, dbeta(y, 3, 10), type = "l", col = "cyan", main = "Beta(3, 10)",
 
 
 ## FSDS - Chapter 3 
-
 ### Ex 3.18
-*Sunshine City, which attracts primarily retired people, has 90,000 residents with a mean age of 72 years and a standard deviation of 12 years. The age distribution is skewed to the left. A random sample of 100 residents of Sunshine City has y = 70 and s = 11...*
+(Alessio)
+*Sunshine City, which attracts primarily retired people, has 90,000 residents with a mean age of 72 years and a standard deviation of 12 years. The age distribution is skewed to the left. A random sample of 100 residents of Sunshine City has y = 70 and s = 11.*
+
+*(a) Describe the center and spread of the (i) population distribution, (ii) sample data distribution. What shape does the sample data distribution probably have? Why?*
+
 **Solution**
+the center of spread of the distribution is $\mu=72$ and the spread is equal to the standard deviation $\sigma=12$ while for the sample it's $\hat{Y}=70$ and spread $\hat{S}=11$ the sample data distribution probably have the shape of a normal distribution, since with the sample size of 100 we can apply the central limit theorem to approximate it. 
 
-Add comments to the solution.
+*(b) Find the center and spread of the sampling distribution of Y for n = 100. What shape does it have and what does it describe?*
 
+**Solution**
+by the central limit theorem we can assume that the center of the sample distribution is going to be $\mu_\hat{Y}=\mu=72$ and the spread is going to be $\sigma_\hat{Y}=\frac{\sigma}{\sqrt n}=12/10=1.2$, the shape, as stated before, is going to be approximately that of a normal distribution and it tell us the likely range of sample means of a sampling of 100 citizens.
+
+*(c) Explain why it would not be unusual to sample a person of age 60 in Sunshine City, but it would be highly unusual for the sample mean to be 60, for a random sample of 100 residents.*
+
+**Solution**
+this is due to the difference in spread of the two distributions, with a standard deviation of 12 and a mean of 72 it's easy to see that a person of age 60 can be easly drawn, while the sample mean distribution has a much smaller standard deviation resulting in having a sample mean that stays very close to $\hat{\mu}$.
+
+*(d) Describe the sampling distribution of Y : (i) for a random sample of size n = 1; (ii) if you sample all 90,000 residents.*
+
+**Solution**
+the sample distribution will keep $\mu_\hat{Y}=72$ in both cases, what is going to change is the standard deviation, in the first case the standard deviation is going to be $\sigma_\hat{Y}=\frac{\sigma}{\sqrt n}=12/1=12$ while in the second case it's going to be $\sigma_\hat{Y}=\frac{\sigma}{\sqrt n}=12/300=0,04$ which basically means that if you sampled the whole city you would get the exact mean for the original distribution every time.
 
 ### Ex 3.28
+(Alessio)
 *A survey is planned to estimate the population proportion $\pi$ supporting more government action to address global warming. For a simple random sample, if $\pi$ may be near 0.50, how large should n be so that the standard error of the sample proportion is 0.04?*
+
 **Solution**
-
-Add comments to the solution.
-
+we know that we want a $SE=0.04$, the formula for the standard error for a proportion is $SE(p)=\sqrt{\frac{pi(1-pi)}{n}}$ and by substituting $\pi$ we get $0,04=\sqrt{\frac{0,25}{n}}$ therefore $n=\frac{0.25}{0,04^2}=156.25\approx 157$
 
 ### Ex 3.24 (use R)
+(Alessio)
 *Construct a population distribution that is plausible for Y = number of alcoholic drinks in the past day. Use the following steps:*
-
+*(a) Simulate a single random sample of size n = 1000 from this population to reflect results of a typical sample survey. Summarize how the sample mean and standard deviation resemble those for the population. (Alternatively, you can do this and part*
 **Solution**
+I find this solution plausible because a person is more likely to not drink in a day then to drink, and the higher the number the less likely a person is to drink another drink, we could have also used a poisson distribution but it would have not given the high differce that there is between 0 and 1 or more drinks
 
-Add comments to the solution.
+in the following, the theoretical mean and variance, the sample mean and sample variance are calculated. the sample mean is an estimate of the population mean and should be close to the theoretical mean of the distribution based on the population proportions and the sample variance
+```{r sample_size_n echo=TRUE}
+set.seed(123)
+n=1000
+values <- c(0, 1, 2, 3, 4)
+probs <- c(0.55, 0.24, 0.15, 0.05, 0.01)
+mu=0
+sigmasq=0
+for(i in 1:5)
+{
+  mu=mu+values[i]*probs[i]
+}
+for(i in 1:5)
+{
+  sigmasq=sigmasq+((values[i]-mu)^2*probs[i])
+}
+mu
+sqrt(sigmasq)
+samples <- sample(values, size = 1000, replace = TRUE, prob = probs)
+
+smean =mean(samples)
+svar=var(samples)
+
+smean
+svar
+
+hist(samples, main = "number of drinks in a day",
+        ylab = "Number of drinks", col = "skyblue")
+
+```
+*Now draw 10,000 random samples of size 1000 each, to approximate the sampling distribution of Y . Report the mean and standard deviation of this simulated sampling distribution, and compare to the theoretical values. Explain what this sampling distribution represents.*
+
+**solution**
+```{r part_B echo=TRUE}
+set.seed(123)
+n=1000
+m=10000
+values <- c(0, 1, 2, 3, 4)
+probs <- c(0.55, 0.24, 0.15, 0.05, 0.01)
 
 
-## FSDS - Chapter 4 
+means= array(0,dim=10000)
+for(i in 1:10000)
+{
+  multisamples=sample(values, size = 1000, replace = TRUE, prob = probs)
+  means[i]=mean(multisamples)
+}
 
+meanofmeans=mean(means)
+varianceofmeans=var(means)
+meanofmeans
+sqrt(varianceofmeans)
+```
+this distribution represents the distribution of sample means you would expect if you repeatedly took random samples of size 1,000 from this population which brings the mean of this distribution close to the original due to the law of large numbers.
+the standard deviation will be extremely small since it represents how well the distribution gets every time it gets sampled to the means, this means that every time we extract a sample mean it will be extremely close to the theoretical one.## FSDS - Chapter 4 
 ### Ex 4.14
 *Using the Students data file, for the corresponding population, construct a 95% confidence interval (a) for the mean weekly number of hours spent watching TV; (b) to compare females and males on the mean weekly number of hours spent watching TV. In each case, state assumptions, including the practical importance of each, and interpret results.*
 
