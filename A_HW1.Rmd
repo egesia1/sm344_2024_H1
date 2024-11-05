@@ -1,12 +1,16 @@
 ---
 title: "GroupA_HW1"
 author: "S. Cattonar, L.Ricatti, M. Rizwan, D. Rosa, A. Valle"
-output: 
+date: "2024-11-05"
+output:
+  html_document:
+    toc: true
+    toc_depth: '3'
+    df_print: paged
   pdf_document:
     latex_engine: xelatex
     toc: true
     toc_depth: 3
-date: "2024-11-05"
 ---
 
 ```{r setup, include=FALSE}
@@ -693,24 +697,130 @@ Add comments to the solution.
 ## FSDS - Chapter 5 
 
 ### Ex 5.2
-*When a government does not have enough money to pay for the services that it provides, it can raise taxes or it can reduce services. When the Florida Poll asked a random sample of 1200 Floridians which they preferred, 52% (624 of the 1200) chose raise taxes and 48% chose reduce services. Let $\pi$ denote the population proportion of Floridians who would choose raising taxes. Analyze whether this is a minority of the population ($\pi$ < 0.50) or a majority ($\pi$ > 0.50) by testing H0 : $\pi$ = 0.50 against Ha : $\pi$ $\neq$ 0.50. Interpret the P -value. Is it appropriate to “accept H0 ? Why or why not?*
+*When a government does not have enough money to pay for the services that it provides, it can raise taxes or it can reduce services. When the Florida Poll asked a random sample of 1200 Floridians which they preferred, 52% (624 of the 1200) chose raise taxes and 48% chose reduce services. Let $\pi$ denote the population proportion of Floridians who would choose raising taxes. Analyze whether this is a minority of the population ($\pi < 0.50$) or a majority ($\pi > 0.50$) by testing $H_0 : \pi = 0.50$ against $H_a : \pi \neq 0.50$. Interpret the P-value. Is it appropriate to “accept" $H_0$ ? Why or why not?*
+
 **Solution**
 
-Add comments to the solution.
+
+
+- $H_0: \pi = 0.50$ (the population proportion is 50%, suggesting no majority preference for raising taxes).
+- $H_a: \pi \neq 0.50$ (the population proportion is different from 50%).
+
+- Sample size (\(n\)) = 1200
+- Sample proportion (\(\hat{p}\)) = 624 / 1200 = 0.52
+- Significance level (\(\alpha\)) = 0.05
+
+
+```{r}
+# Given data
+n <- 1200                     # Sample size
+p_hat <- 0.52                 # Sample proportion
+mu <- 0.50                   # Hypothesized proportion
+
+# Standard error for the proportion
+standard_error <- sqrt((mu * (1 - mu)) / n)
+
+# p-value for a two-tailed test
+p_value <- 2 * (1 - pnorm(abs((p_hat - mu) / standard_error)))
+
+# Display the p-value
+p_value
+```
+
+*The P-value is greater than $\alpha = 0.05$, so we can't reject the null hypotesis. For definition, we can't "accept" $H_0$ but from this hypotesis testing we don't have any evidence against it.*
 
 
 
 ### Ex 5.12
-*The example in Section 3.1.4 described an experiment to estimate the mean sales with a proposed menu for a new restaurant. In a revised experiment to compare two menus, on Tuesday of the opening week the owner gives customers menu A and on Wednesday she gives them menu B. The bills average $22.30 for the 43 customers on Tuesday (s = 6.88) and $25.91 for the 50 customers on Wednesday (s = 8.01). Under the strong assumption that her customers each night are comparable to a random sample from the conceptual population of potential customers, show how to compare the mean sales for the two menus based on (a) the P -value of a significance test, (b) a 95% confidence interval. Which is more informative, and why? (When used in an experiment to compare two treatments to determine which works better, a two-sample test is often called an A/B test.).*
+*The example in Section 3.1.4 described an experiment to estimate the mean sales with a proposed menu for a new restaurant. In a revised experiment to compare two menus, on Tuesday of the opening week the owner gives customers menu A and on Wednesday she gives them menu B. The bills average $22.30 for the 43 customers on Tuesday (s = 6.88) and $25.91 for the 50 customers on Wednesday (s = 8.01). Under the strong assumption that her customers each night are comparable to a random sample from the conceptual population of potential customers, show how to compare the mean sales for the two menus based on (a) the P-value of a significance test, (b) a 95% confidence interval. Which is more informative, and why? (When used in an experiment to compare two treatments to determine which works better, a two-sample test is often called an A/B test.).*
 
 **Solution**
 
-Add comments to the solution.
 
+
+We have two groups of customers who were given different menus, A and B, on consecutive days. The objective is to compare the average sales between these two menus.
+
+- **Menu A** (Tuesday): Mean = 22.30, n = 43, Standard Deviation = 6.88
+- **Menu B** (Wednesday): Mean = 25.91, n = 50, Standard Deviation = 8.01
+
+Assuming these samples are representative of the population, we will conduct a two-sample t-test to determine if there is a statistically significant difference between the two menu sales averages.
+
+**Hypothesis**:  
+ - $H_0$: There is no difference in mean sales between the two menus $\mu_A = \mu_B$.
+ - $H_1$: There is a difference in mean sales $\mu_A \neq \mu_B$.
+
+**Significance Level**: We will use a 5% significance level or $\alpha = 0.05$.
+
+
+```{r}
+mean_A <- 22.30
+sd_A <- 6.88
+n_A <- 43
+
+mean_B <- 25.91
+sd_B <- 8.01
+n_B <- 50
+
+# Pooled standard deviation
+s_p <- sqrt(((n_A - 1) * sd_A^2 + (n_B - 1) * sd_B^2) / (n_A + n_B - 2))
+
+# Degrees of freedom
+df <- n_A + n_B - 2
+
+# Test statistic
+t_statistic <- (mean_A - mean_B) / (s_p * sqrt(1 / n_A + 1 / n_B))
+
+# P-value for a two-tailed test
+p_value <- 2 * pt(-abs(t_statistic), df)
+
+# 95% Confidence Interval
+alpha <- 0.05
+t_critical <- qt(1 - alpha/2, df)
+margin_of_error <- t_critical * s_p * sqrt(1 / n_A + 1 / n_B)
+confidence_interval <- c((mean_A - mean_B) - margin_of_error, 
+                         (mean_A - mean_B) + margin_of_error)
+
+
+
+t_statistic
+df
+p_value
+confidence_interval
+
+```
+
+The confidence interval is more informative because:
+
+- The P-value in this specific case is smaller than the tipical $\alpha$ significance level, so we can reject the null hypotesis, so we at least know that the sale price will influence the sales. If it was greater we simply don't know anything about the problem, because by definition we can't accept $H_0$, but just fail to reject it.
+- A 95% confidence intervalgives us a range of plausible values for the difference in mean sales between the two menus. So, it not only tells us whether there’s a difference but also gives a range for how much difference to expect.
 
 
 ### Ex 5.50
-*A random sample of size 40 has y = 120. The P -value for testing H0: $\mu$ = 100 against H : $\mu$ $\neq$ 100 is 0.057. Explain what is incorrect about each of the following interpretations of this P-value, and provide a proper interpretation.*
+*A random sample of size 40 has $\bar{y} = 120$. The P-value for testing $H_0:\mu = 100$ against $H_a:\mu \neq 100$ is 0.057. Explain what is incorrect about each of the following interpretations of this P-value, and provide a proper interpretation.*
+
+  (a) *The probability that $H_0$ is correct equals 0.057.*
+
+  (b) *The probability that $\bar{y} = 120$ if $H_0$ is true equals 0.057.*
+
+  (c) *The probability of Type I error equals 0.057.*
+
+  (d) *We can accept $H_0$ at the $\alpha = 0.05$ level.*
+  
 **Solution**
 
-Add comments to the solution.
+#### a) The probability that $H_0$ is correct equals 0.057.
+
+*0.057 is the P-value, but it is not the probability that $H_0$ is true. The p-value represents the probability of obtaining a result as extreme as, or more extreme than, the observed result, assuming that $H_0$ is true.*
+
+
+#### b) The probability that $\bar{y} = 120$ if $H_0$ is true equals 0.057.
+
+*This interpretation is incorrect because the P-value does not reflect the probability of observing exactly $\bar{y} = 120$ if $H_0$ is true.Instead, it measures the probability of observing a value as extreme, or more extreme than $\bar{y} = 120$*
+
+#### c) The probability of Type I error equals 0.057.
+
+*It's incorrect because the Type I error is equals to the significance level $\alpha$ and not to the P-value. So, if we choose $\alpha = 0.05$ like in the next point, the probability of a Type I error would be 0.05 or 5% and not 0.057 or 5.7%*
+
+#### d) We can accept $H_0$ at the $\alpha = 0.05$ level.
+
+*In the hypothesis testing, you never can accept $H_0$. You can only "reject it" if your p-value is smaller than your significance level ($\alpha$) or "fail to reject it" if your p-value is greater or equal to it. In this specific case, the p-value is greater, so, for now, we failed to reject it.*
