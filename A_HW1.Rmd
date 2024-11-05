@@ -1,16 +1,12 @@
 ---
 title: "GroupA_HW1"
 author: "S. Cattonar, L.Ricatti, M. Rizwan, D. Rosa, A. Valle"
-date: "2024-11-05"
 output:
-  html_document:
-    toc: true
-    toc_depth: '3'
-    df_print: paged
   pdf_document:
     latex_engine: xelatex
     toc: true
     toc_depth: 3
+date: "2024-11-05"
 ---
 
 ```{r setup, include=FALSE}
