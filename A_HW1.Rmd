@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## CS - Chapter 1 
 
 ### Ex 1.1
-(Luca)
+
 *Exponential random variable, X $\geq$ 0, has p.d.f. f(x) = $\lambda \exp(-\lambda x)$.*    
   
 *1. Find the c.d.f. and the quantile function for X.*  
@@ -62,7 +62,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ### Ex 1.6
-(Luca)
+
 *Let X and Y be non-independent random variables, such that var(X) = $\sigma_x^2$, var(Y) = $\sigma_y^2$ and cov(X,Y) = $\sigma_{xy}^2$. Using the result from Section 1.6.2, find var(X + Y) and var(X - Y).*\
 \
 **Solution**
@@ -108,7 +108,7 @@ $\text{var}(X - Y) = \sigma_x^2 - 2\sigma_{xy}^2 + \sigma_y^2$\
 
 
 ### Ex 3.5
-(Devid)
+
 *Consider solving the matrix equation \( Ax = y \) for \( x \), where \( y \) is a known \( n \)-vector and \( A \) is a known \( n \times n \) matrix. The formal solution to the problem is \( x = A^{-1} y \), but it is possible to solve the equation directly, without actually forming \( A^{-1} \). This question explores this direct solution.*
   
   a. *First create an A, x and y satisfying Ax = y.*
@@ -172,7 +172,7 @@ $\text{var}(X - Y) = \sigma_x^2 - 2\sigma_{xy}^2 + \sigma_y^2$\
 *Directly solving (solve(A, y)) is faster than forming the inverse and also has comparable accuracy.*
   
 ### Ex 3.6
-(Devid)
+
 *The empirical cumulative distribution function (ECDF) for a set of measurements \({x_i : i = 1, \ldots, n}\) is*
 
 \[
@@ -220,7 +220,7 @@ $\text{var}(X - Y) = \sigma_x^2 - 2\sigma_{xy}^2 + \sigma_y^2$\
 ## FSDS - Chapter 2
         
 ### Ex 2.8
-(Devid)
+
 *Each time a person shops at a grocery store, the event of catching a cold or some other virus from another shopper is independent from visit to visit and has a constant probability over the year, equal to 0.01.*
 
   (a) *In 100 trips to this store over the course of a year, the probability of catching a virus while                  shopping there is 100(0.01) = 1.0. What is wrong with this reasoning?*
@@ -257,7 +257,7 @@ P_v = 1 - P(X = 0) = 1 - \binom{100}{0} \cdot (0.01)^0 \cdot (1 - 0.01)^{100 - 0
 
 
 ### Ex 2.16
-(Luca)
+
 *Each day a hospital records the number of people who come to the emergency room for treatment.(a) In the first week, the observations from Sunday to Saturday are 10, 8, 14, 7, 21, 44, 60. Do you think that the Poisson distribution might describe the random variability of this phenomenon adequately. Why or why not?*
 
 **Solution**
@@ -363,7 +363,7 @@ legend("topright", legend = c("Observed", "Theoretical Poisson"),
 
 
 ### Ex 2.21
-(Luca)
+
 *Plot the gamma distribution by fixing the shape parameter k = 3 and setting the scale parameter $\theta$ = 0.5, 1, 2, 3, 4, 5. What is the effect of increasing the scale parameter? (See also Exercise 2.48.)*
 
 **Solution**
@@ -416,12 +416,98 @@ legend("topright", legend = paste("theta =", theta), col = colors, lty = 1, cex 
 Refer to Table 2.4 cross classifying happiness with family income.
 
 **Solution**
+A. the corelation coefficient is given by $\rho=\frac{COV(X,Y)}{\sigma_X\sigma_Y}$ therefore we have to compute the mean, variance and covariance in oreder to have the desired corelations.
 
-Add comments to the solution.
+since we are talking about a joint distribution function, if we have S_x and S_y set of scores of each variable, the mean for each variable will be given by $\mu_x=\sum_{x\in S_x} x P(X=x_i)$ where $P(X=x)=\sum_{y\in S_y} P(X=x,Y=y)$ which we already have in the table under "total"
+
+the variance is similarly done: $\mu_x=\sum_{x\in S_x} (x-\mu_x)^2 P(X=x_i)$ once we have the means and the covariance is defined by $COV(X,Y)=\sum_{y\in S_y}\sum_{x\in S_x}(x-\mu_x)(y-mu_y)P(x,y)$
+from this we apply the first formula we stated at the beginning and get the corelation $\rho$.
+
+## controlla se devo usare mu o E
+```{r part_A, echo=TRUE}
+library(knitr)
+l=c(0.080, 0.198, 0.079, 0.357,0.043, 0.254, 0.143, 0.440,0.017, 0.105, 0.081, 0.203, 0.140, 0.557, 0.303, 1.000)
+
+S_1<-c(1,2,3)
+S_2<-c(1,4,5)
+dim(l)<- c(4,4)
+rownames(l)<-c("Below average","Average","Above average", "Total")
+colnames(l)<-c("Not too happy", "Pretty happy","Very happy", "Total")
+
+kable(l, row.names=T)
+
+m<- c(0,0) #mean
+for(i in 1:length(S_1)){ 
+  m[1]<-m[1]+(S_1[i]*l[4,i])#x
+  m[2]<-m[2]+(S_1[i]*l[i,4])#y
+}
+m
+v<- c(0,0) #variance
+for(i in 1:length(S_1)){ 
+ v[1]<-(S_1[i]-m[1])^2*l[4,i]#x
+ v[2]<-(S_1[i]-m[2])^2*l[i,4]#y
+}
+v
+#covariance matrix
+covariance=0
+for(i in 1:length(S_1)){ 
+  for(j in 1:length(S_1)){ 
+    a<-(S_1[i]-m[1])*(S_1[j]-m[2])*l[j,i]
+    covariance<-covariance+(S_1[i]-m[1])*(S_1[j]-m[2])*l[j,i]
+    
+  }
+}
+covariance
+#corelation
+r<-covariance/(sqrt(v[1])*sqrt(v[2]))
+r
+
+#repeat with s_2 for the Y
+
+m<- c(0,0) #mean
+for(i in 1:length(S_1)){ 
+  m[1]<-m[1]+(S_1[i]*l[4,i])
+  m[2]<-m[2]+(S_2[i]*l[i,4])
+}
+m
+v<- c(0,0) #variance
+for(i in 1:length(S_1)){ 
+ v[1]<-(S_1[i]-m[1])^2*l[4,i]
+ v[2]<-(S_2[i]-m[2])^2*l[i,4]
+}
+v
+#covariance matrix
+covariance=0
+for(i in 1:length(S_1)){ 
+  for(j in 1:length(S_1)){ 
+    covariance<-covariance+(S_1[i]-m[1])*(S_2[j]-m[2])*l[j,i]
+  }
+}
+covariance
+#corelation
+r<-covariance/(sqrt(v[1])*sqrt(v[2]))
+r
+
+```
+B.  to exhibit indipendence the joint distribution must have $P(x,y)=P(x)P(y)$ therefore each $P(x,y)$ will be easely computed
+```{r part_B_01, echo=TRUE}
+marginal_X<-c(0.357,0.440,0.203)
+marginal_Y<-c(0.140,0.557,0.303)
+
+indy_table<-matrix(0,length(marginal_X),length(marginal_Y))
+rownames(indy_table)<-c("Below average","Average","Above average")
+colnames(indy_table)<-c("Not too happy", "Pretty happy","Very happy")
+for(i in 1:length(marginal_X)){ 
+  for(j in 1:length(marginal_Y)){ 
+    indy_table[j,i]<-marginal_X[j]*marginal_Y[i]
+  }
+}
+indy_table
+```
 
 
 ### Ex 2.52
-(Devid)
+
 *The pdf $f$ of a $N(\mu, \sigma^2)$ distribution can be derived from the standard normal pdf $\phi$ shown in equation $(2.9)$. (a) Show that the normal cdf $F$ relates to the standard normal cdf $\Phi$ by $F(y) = \Phi[(y - \mu)/\sigma]$. (b) From (a), show that $f(y) = (1/\sigma)\phi[(y - \mu)/\sigma]$, and show this is equation $(2.8)$.*
 
 **Solution**
@@ -468,7 +554,7 @@ f(y) = \phi\left(\frac{y - \mu}{\sigma}\right) \frac{1}{\sigma}
 
 
 ### Ex 2.53
-(Devid)
+
 *If $Y$ is a standard normal random variable, with cdf $\Phi$, what is the probability distribution of $X = \Phi(Y)$? Illustrate by randomly generating a million standard normal random variables, applying the cdf function $\Phi()$ to each, and plotting histograms of the (a) $y$ values, (b) $x$ values.*
 
 **Solution**
@@ -518,7 +604,7 @@ ggplot(data.frame(X), aes(x = X)) +
 
 
 ### Ex 2.70
-(Devid)
+
 *The beta distribution is a probability distribution over (0, 1) that is often used in applications for which the random variable is a proportion. The beta pdf is*
 \[
 f(y;\alpha,\beta) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)}y^{\alpha-1}(1-y)^{\beta-1}, 0\leq y \leq 1,
@@ -641,53 +727,286 @@ plot(y, dbeta(y, 3, 10), type = "l", col = "cyan", main = "Beta(3, 10)",
 ## FSDS - Chapter 3 
 
 ### Ex 3.18
-*Sunshine City, which attracts primarily retired people, has 90,000 residents with a mean age of 72 years and a standard deviation of 12 years. The age distribution is skewed to the left. A random sample of 100 residents of Sunshine City has y = 70 and s = 11...*
+
+*Sunshine City, which attracts primarily retired people, has 90,000 residents with a mean age of 72 years and a standard deviation of 12 years. The age distribution is skewed to the left. A random sample of 100 residents of Sunshine City has y = 70 and s = 11.*
+
+*(a) Describe the center and spread of the (i) population distribution, (ii) sample data distribution. What shape does the sample data distribution probably have? Why?*
+
 **Solution**
+the center of spread of the distribution is $\mu=72$ and the spread is equal to the standard deviation $\sigma=12$ while for the sample it's $\hat{Y}=70$ and spread $\hat{S}=11$ the sample data distribution probably have the shape of a normal distribution, since with the sample size of 100 we can apply the central limit theorem to approximate it. 
 
-Add comments to the solution.
+*(b) Find the center and spread of the sampling distribution of Y for n = 100. What shape does it have and what does it describe?*
 
+**Solution**
+by the central limit theorem we can assume that the center of the sample distribution is going to be $\mu_{\hat{Y}} = \mu = 72$. and the spread is going to be $\sigma_{\hat{Y}}=\frac{\sigma}{\sqrt n}=12/10=1.2$, the shape, as stated before, is going to be approximately that of a normal distribution and it tell us the likely range of sample means of a sampling of 100 citizens.
+
+*(c) Explain why it would not be unusual to sample a person of age 60 in Sunshine City, but it would be highly unusual for the sample mean to be 60, for a random sample of 100 residents.*
+
+**Solution**
+this is due to the difference in spread of the two distributions, with a standard deviation of 12 and a mean of 72 it's easy to see that a person of age 60 can be easly drawn, while the sample mean distribution has a much smaller standard deviation resulting in having a sample mean that stays very close to $\hat{\mu}$.
+
+*(d) Describe the sampling distribution of Y : (i) for a random sample of size n = 1; (ii) if you sample all 90,000 residents.*
+
+**Solution**
+the sample distribution will keep $\mu_{\hat{Y}} = 72$ in both cases, what is going to change is the standard deviation, in the first case the standard deviation is going to be $\sigma_{\hat{Y}}=\frac{\sigma}{\sqrt n}=12/1=12$ while in the second case it's going to be $\sigma_{\hat{Y}}=\frac{\sigma}{\sqrt n}=12/300=0,04$ which basically means that if you sampled the whole city you would get the exact mean for the original distribution every time.
 
 ### Ex 3.28
+
 *A survey is planned to estimate the population proportion $\pi$ supporting more government action to address global warming. For a simple random sample, if $\pi$ may be near 0.50, how large should n be so that the standard error of the sample proportion is 0.04?*
+
 **Solution**
-
-Add comments to the solution.
-
+we know that we want a $SE=0.04$, the formula for the standard error for a proportion is $SE(p)=\sqrt{\frac{pi(1-pi)}{n}}$ and by substituting $\pi$ we get $0,04=\sqrt{\frac{0,25}{n}}$ therefore $n=\frac{0.25}{0,04^2}=156.25\approx 157$
 
 ### Ex 3.24 (use R)
+
 *Construct a population distribution that is plausible for Y = number of alcoholic drinks in the past day. Use the following steps:*
-
+*(a) Simulate a single random sample of size n = 1000 from this population to reflect results of a typical sample survey. Summarize how the sample mean and standard deviation resemble those for the population. (Alternatively, you can do this and part*
 **Solution**
+I find this solution plausible because a person is more likely to not drink in a day then to drink, and the higher the number the less likely a person is to drink another drink, we could have also used a poisson distribution but it would have not given the high differce that there is between 0 and 1 or more drinks
 
-Add comments to the solution.
+in the following, the theoretical mean and variance, the sample mean and sample variance are calculated. the sample mean is an estimate of the population mean and should be close to the theoretical mean of the distribution based on the population proportions and the sample variance
+```{r sample_size_n, echo=TRUE}
+set.seed(123)
+n=1000
+values <- c(0, 1, 2, 3, 4)
+probs <- c(0.55, 0.24, 0.15, 0.05, 0.01)
+mu=0
+sigmasq=0
+for(i in 1:5)
+{
+  mu=mu+values[i]*probs[i]
+}
+for(i in 1:5)
+{
+  sigmasq=sigmasq+((values[i]-mu)^2*probs[i])
+}
+mu
+sqrt(sigmasq)
+samples <- sample(values, size = 1000, replace = TRUE, prob = probs)
 
+smean =mean(samples)
+svar=var(samples)
+
+smean
+svar
+
+hist(samples, main = "number of drinks in a day",
+        ylab = "Number of drinks", col = "skyblue")
+
+```
+*Now draw 10,000 random samples of size 1000 each, to approximate the sampling distribution of Y . Report the mean and standard deviation of this simulated sampling distribution, and compare to the theoretical values. Explain what this sampling distribution represents.*
+
+**solution**
+```{r part_B_02, echo=TRUE}
+set.seed(123)
+n=1000
+m=10000
+values <- c(0, 1, 2, 3, 4)
+probs <- c(0.55, 0.24, 0.15, 0.05, 0.01)
+
+
+means= array(0,dim=10000)
+for(i in 1:10000)
+{
+  multisamples=sample(values, size = 1000, replace = TRUE, prob = probs)
+  means[i]=mean(multisamples)
+}
+
+meanofmeans=mean(means)
+varianceofmeans=var(means)
+meanofmeans
+sqrt(varianceofmeans)
+```
+this distribution represents the distribution of sample means you would expect if you repeatedly took random samples of size 1,000 from this population which brings the mean of this distribution close to the original due to the law of large numbers.
+the standard deviation will be extremely small since it represents how well the distribution gets every time it gets sampled to the means, this means that every time we extract a sample mean it will be extremely close to the theoretical one.## FSDS - Chapter 4 
 
 ## FSDS - Chapter 4 
 
 ### Ex 4.14
-*Using the Students data file, for the corresponding population, construct a 95% confidence interval (a) for the mean weekly number of hours spent watching TV; (b) to compare females and males on the mean weekly number of hours spent watching TV. In each case, state assumptions, including the practical importance of each, and interpret results.*
+*Using the Students data file, for the corresponding population, construct a 95% confidence interval:*
+
+(a) *for the mean weekly number of hours spent watching TV.*
+(b) *to compare females and males on the mean weekly number of hours spent watching TV.*
+
+*In each case, state assumptions, including the practical importance of each, and interpret results.*
 
 **Solution**
 
-Add comments to the solution.
+#### (a) 95% Confidence Interval for Mean Weekly Hours of TV Watching
+
+Let:
+\[
+\bar{X} = \text{sample mean of weekly hours spent watching TV},
+\]
+\[
+s = \text{sample standard deviation of weekly hours},
+\]
+\[
+n = \text{sample size}.
+\]
+
+The standard error of the mean is:
+\[
+\text{SE} = \frac{s}{\sqrt{n}}.
+\]
+
+The 95% confidence interval is:
+\[
+\bar{X} \pm t_{\alpha/2, \, n-1} \times \text{SE}
+\]
+where $t_{\alpha/2, \, n-1}$ is the critical value from the $t$-distribution with $n-1$ degrees of freedom.
+
+**Assumptions:** The data is randomly sampled, and either normally distributed or sufficiently large for the Central Limit Theorem to apply.
+
+**Interpretation:** This interval provides a range within which the true mean weekly hours of TV watching is expected to fall with 95% confidence.
+
+#### (b) 95% Confidence Interval for the Difference in Mean Weekly Hours Between Females and Males
+
+Let:
+\[
+\bar{X}_f = \text{mean weekly hours for females}, \quad s_f = \text{standard deviation for females},
+\]
+\[
+\bar{X}_m = \text{mean weekly hours for males}, \quad s_m = \text{standard deviation for males},
+\]
+\[
+n_f = \text{sample size for females}, \quad n_m = \text{sample size for males}.
+\]
+
+The pooled standard error is:
+\[
+\text{SE}_{\text{pooled}} = \sqrt{\frac{s_f^2}{n_f} + \frac{s_m^2}{n_m}}.
+\]
+
+The 95% confidence interval for the difference in means ($\mu_f - \mu_m$) is:
+\[
+(\bar{X}_f - \bar{X}_m) \pm t_{\alpha/2, \, df} \times \text{SE}_{\text{pooled}}
+\]
+where $t_{\alpha/2, \, df}$ is the critical $t$-value with degrees of freedom $df$ (calculated as $\min(n_f - 1, n_m - 1)$ or using the Satterthwaite approximation if variances are unequal).
+
+**Assumptions:** Samples are independent and randomly selected. We assume normality or large sample sizes, and equal variances for females and males (if not, use Welch's $t$-test).
+
+**Interpretation:** This interval gives a range for the true difference in mean weekly hours between females and males. If the interval includes 0, it suggests no significant difference in weekly hours spent watching TV by gender.
 
 
 ### Ex 4.16
-*The Substance data file at the book’s website shows a contingency table formed from a survey that asked a sample of high school students whether they have ever used alcohol, cigarettes, and marijuana. Construct a 95% Wald confidence interval to compare those who have used or not used alcohol on whether they have used marijuana, using (a) formula (4.13); (b) software. State assumptions for your analysis, and interpret results.*
+
+*The Substance data file shows a contingency table formed from a survey that asked a sample of high school students whether they have ever used alcohol, cigarettes, and marijuana. Construct a 95% Wald confidence interval to compare those who have used or not used alcohol on whether they have used marijuana, using:*
+
+(a) *formula (4.13);*
+(b) *software.*
+
+*State assumptions for your analysis, and interpret results.*
 
 **Solution**
 
-Add comments to the solution.
+#### Contingency Table Information
 
+Let:
+- $n_{11}$ = number of students who have used both alcohol and marijuana,
+- $n_{10}$ = number of students who have used alcohol but not marijuana,
+- $n_{01}$ = number of students who have not used alcohol but have used marijuana,
+- $n_{00}$ = number of students who have not used either alcohol or marijuana.
+
+Define:
+\[
+n_1 = n_{11} + n_{10} \quad \text{(total who have used alcohol)}
+\]
+\[
+n_0 = n_{01} + n_{00} \quad \text{(total who have not used alcohol)}
+\]
+\[
+p_1 = \frac{n_{11}}{n_1} \quad \text{(proportion of alcohol users who have used marijuana)}
+\]
+\[
+p_0 = \frac{n_{01}}{n_0} \quad \text{(proportion of non-alcohol users who have used marijuana)}
+\]
+
+The difference in proportions is:
+\[
+\hat{p} = p_1 - p_0.
+\]
+
+#### (a) 95% Wald Confidence Interval using Formula (4.13)
+
+The formula for the 95% Wald confidence interval for the difference between two proportions is given by:
+\[
+\hat{p} \pm z_{\alpha/2} \sqrt{\frac{p_1(1 - p_1)}{n_1} + \frac{p_0(1 - p_0)}{n_0}}
+\]
+where $z_{\alpha/2}$ is the critical value from the standard normal distribution for a 95% confidence level (approximately 1.96).
+
+Substitute $p_1$, $p_0$, $n_1$, and $n_0$ from the data to calculate the interval.
+
+**Assumptions:**
+- Random sampling: The sample of high school students should be representative of the population.
+- Independence: The responses of individual students are independent of each other.
+- Normal approximation: Sample sizes $n_1$ and $n_0$ should be large enough for the normal approximation to hold (usually $n \times p \geq 5$ and $n \times (1 - p) \geq 5$ for each group).
+
+**Interpretation:** The confidence interval provides a range for the difference in proportions between alcohol users and non-users in terms of marijuana usage. If the interval includes 0, it suggests no significant difference in marijuana use between those who have and have not used alcohol.
+
+#### (b) 95% Confidence Interval using Software
+
+To compute this confidence interval using software as R, calculating confidence intervals for two proportions. For example, in R:
 
 
 ### Ex 4.48
-*For a simple random sample of $n$ subjects, explain why it is about 95% likely that the sample proportion has error no more than $1/\sqrt{n}$ in estimating the population proportion. (Hint: To show this "$1/\sqrt{n}$ rule," find two standard errors when $\pi = 0.50$, and explain how this compares to two standard errors at other values of $\pi$.) Using this result, show that $n = 1/M^2$ is a safe sample size for estimating a proportion to within $M$ with 95% confidence.*
+
+*For a simple random sample of $n$ subjects, explain why it is about 95% likely that the sample proportion has error no more than $\frac{1}{\sqrt{n}}$ in estimating the population proportion. (Hint: To show this "$\frac{1}{\sqrt{n}}$" rule, find two standard errors when $\pi = 0.50$, and explain how this compares to two standard errors at other values of $\pi$.) Using this result, show that $n = \frac{1}{M^2}$ is a safe sample size for estimating a proportion to within $M$ with 95% confidence.*
 
 **Solution**
 
-Add comments to the solution.
+Let:
+\[
+\hat{p} = \text{sample proportion},
+\]
+\[
+\pi = \text{population proportion}.
+\]
 
+The standard error of the sample proportion $\hat{p}$ is given by:
+\[
+\text{SE}(\hat{p}) = \sqrt{\frac{\pi (1 - \pi)}{n}}.
+\]
+
+To construct a 95% confidence interval, we use approximately two standard errors (since 95% of the standard normal distribution falls within $\pm 1.96$ standard deviations of the mean). Therefore, the margin of error $E$ at the 95% confidence level is:
+\[
+E \approx 2 \times \text{SE}(\hat{p}) = 2 \sqrt{\frac{\pi (1 - \pi)}{n}}.
+\]
+
+#### The $\frac{1}{\sqrt{n}}$ Rule
+
+To illustrate the $\frac{1}{\sqrt{n}}$ rule, consider the case where $\pi = 0.50$, which maximizes the product $\pi(1 - \pi)$ and hence gives the largest possible standard error.
+
+When $\pi = 0.50$, the standard error is:
+\[
+\text{SE}(\hat{p}) = \sqrt{\frac{0.5 \times 0.5}{n}} = \frac{1}{2\sqrt{n}}.
+\]
+
+Thus, the margin of error at the 95% confidence level becomes:
+\[
+E \approx 2 \times \frac{1}{2\sqrt{n}} = \frac{1}{\sqrt{n}}.
+\]
+
+This shows that, for a population proportion near $0.5$, it is about 95% likely that the sample proportion $\hat{p}$ will be within $\frac{1}{\sqrt{n}}$ of the population proportion $\pi$. For other values of $\pi$, the standard error $\sqrt{\pi(1 - \pi)/n}$ will be smaller, making $\frac{1}{\sqrt{n}}$ a conservative, safe upper bound on the margin of error.
+
+#### Deriving the Sample Size Formula $n = \frac{1}{M^2}$
+
+To ensure the margin of error $E \leq M$ with 95% confidence, we set the margin of error to $M$:
+\[
+\frac{1}{\sqrt{n}} \leq M.
+\]
+
+Solving for $n$, we get:
+\[
+\sqrt{n} \geq \frac{1}{M},
+\]
+\[
+n \geq \frac{1}{M^2}.
+\]
+
+Thus, $n = \frac{1}{M^2}$ is a safe sample size for estimating the population proportion within a margin of error $M$ with 95% confidence.
+
+**Conclusion:** This result provides a guideline for determining sample size when estimating a population proportion. For a desired margin of error $M$ at the 95% confidence level, a sample size of $n = \frac{1}{M^2}$ is sufficient to ensure that the sample proportion $\hat{p}$ will likely be within $M$ of the population proportion $\pi$.
 
 
 ## FSDS - Chapter 5 
